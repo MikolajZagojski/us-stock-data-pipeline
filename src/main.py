@@ -3,8 +3,6 @@ import load
 
 STOCK_TICKERS = {"AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "BRK.A", "JPM", "JNJ"}
 
-
-
 if __name__ == "__main__":
     trade_date = extract.get_date("2026-04-02")
     
