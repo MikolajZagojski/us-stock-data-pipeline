@@ -1,5 +1,4 @@
-import extract
-import load 
+from stock_pipeline import extract, load
 from datetime import date,timedelta
 STOCK_TICKERS = {"AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "META", "NVDA", "BRK.A", "JPM", "JNJ"}
 
