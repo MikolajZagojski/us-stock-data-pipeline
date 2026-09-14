@@ -1,15 +1,15 @@
 # US Stock Data Pipeline
 
-A batch ETL pipeline that collects daily US stock market data from the Massive API, transforms selected stock records, stores raw and processed data as JSON files, and loads the results into PostgreSQL
+A batch ETL pipeline that collects daily US stock market data from the Massive API, transforms selected stock records, stores raw and processed data as JSON files, and loads the results into PostgreSQL.
 
 ## Project overview
 
-The goal of this project is to build a simple end-to-emd data engineering pipeline for US stock market data.
+The goal of this project is to build a simple end-to-end data engineering pipeline for US stock market data.
 
 The pipeline currently:
 
-1. Fetch daily market data from the Massive API.
-2. Stores the orginal API reponse in the raw data layer.
+1. Fetches daily market data from the Massive API.
+2. Stores the original API response in the raw data layer.
 3. Filters selected stock tickers.
 4. Transforms API fields into an internal schema.
 5. Stores transformed records as processed JSON.
@@ -44,6 +44,7 @@ PostgreSQL
 - Docker
 - Docker Compose
 - Psycopg
+- uv
 - REST API
 - SQL
 - Git
@@ -58,12 +59,19 @@ us-stock-data-pipeline/
 ├── sql/
 │   └── create_table.sql
 ├── src/
-│   ├── extract.py
-│   ├── load.py
-│   └── main.py
-├── compose.yaml
+│   └── stock_pipeline/
+│       ├── __init__.py
+│       ├── extract.py
+│       ├── load.py
+│       └── main.py
+├── tests/
+├── .env.example
 ├── .gitignore
-└── README.md
+├── CONTRIBUTING.md
+├── README.md
+├── compose.yaml
+├── pyproject.toml
+└── uv.lock
 ```
 
 ## Data Schema
@@ -90,14 +98,24 @@ This prevents duplicate records for the same stock and trading day.
 
 ## Environment Variables
 
-Create a `.env` file in the project root:
+Copy `.env.example` to `.env` and fill in the values:
 
 ```env
 API_KEY=your_massive_api_key
+DB_USER=stock_user
 DB_PASS=your_postgres_password
+DB_NAME=stock_market
 ```
 
 The `.env` file is excluded from Git and should not be committed.
+
+## Setup
+
+Install dependencies:
+
+```bash
+uv sync
+```
 
 ## Running PostgreSQL
 
@@ -115,10 +133,8 @@ docker ps
 
 ## Running the Pipeline
 
-Activate the Python virtual environment and run:
-
 ```bash
-python src/main.py
+uv run python -m stock_pipeline.main
 ```
 
 The pipeline will:
@@ -154,10 +170,6 @@ Implemented:
 - Processed JSON storage
 - PostgreSQL running in Docker
 - Python-to-PostgreSQL connection
-- Batch inserts
+- Incremental loading
+- Reconciliation of missing records
 - Duplicate protection
-
-
-## Purpose
-
-This project was created as a hands-on Data Engineering portfolio project focused on learning and demonstrating ETL pipeline design, data storage, PostgreSQL, Docker, and Python.
