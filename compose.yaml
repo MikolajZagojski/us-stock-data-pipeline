@@ -4,9 +4,9 @@ services:
     container_name: stock_postgres
 
     environment:
-      POSTGRES_USER: stock_user
+      POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
-      POSTGRES_DB: stock_market
+      POSTGRES_DB: ${DB_NAME}
 
     ports:
       - "127.0.0.1:5433:5432"
