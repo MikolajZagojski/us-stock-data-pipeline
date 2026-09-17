@@ -20,7 +20,14 @@ def load_stock_data(records: list):
     """Load stock records into PostgreSQL and ignore duplicate ticker-date pairs."""
     with _connect() as conn:
         with conn.cursor() as cur:
-            insert_query = "INSERT INTO stock_info (ticker, open_price, high_price, low_price, close_price, volume, trade_day) VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (ticker, trade_day) DO NOTHING;"
+            insert_query = """
+                INSERT INTO stock_info (
+                    ticker, open_price, high_price, low_price,
+                    close_price, volume, trade_day
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                ON CONFLICT (ticker, trade_day) DO NOTHING;
+            """
             for record in records:
                 input_values = [
                     record["ticker"],
@@ -62,7 +69,11 @@ def get_existing_stock_keys(start_date: date, end_date: date) -> set[tuple[str, 
     """Return existing (ticker, trade_day) keys for the given date range."""
     with _connect() as conn:
         with conn.cursor() as cur:
-            query = "SELECT ticker, trade_day FROM stock_info WHERE trade_day BETWEEN %(start_date)s AND %(end_date)s;"
+            query = """
+                SELECT ticker, trade_day
+                FROM stock_info
+                WHERE trade_day BETWEEN %(start_date)s 
+                AND %(end_date)s;"""
             cur.execute(query, {"start_date": start_date, "end_date": end_date})
             rows = cur.fetchall()
             return set(rows)

@@ -29,7 +29,7 @@ def get_data_json(trade_date: date) -> dict:
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        raise SystemExit(f"Request failed: {e}")
+        raise SystemExit(f"Request failed: {e}") from e
 
 
 def save_to_json(data, prefix: str, file_path: str, trade_date: date):
