@@ -105,6 +105,8 @@ API_KEY=your_massive_api_key
 DB_USER=stock_user
 DB_PASS=your_postgres_password
 DB_NAME=stock_market
+DB_HOST=localhost
+DB_PORT=5433
 ```
 
 The `.env` file is excluded from Git and should not be committed.
