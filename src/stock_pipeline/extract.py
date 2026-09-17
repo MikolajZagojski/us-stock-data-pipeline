@@ -1,12 +1,13 @@
-import requests 
 import json
+from datetime import date, datetime
 
-from datetime import date,datetime
+import requests
 
 from stock_pipeline.config import get_settings
+
 # Massive API configuration
 BASE_URL = "https://api.massive.com/"
-ENDPOINT ="v2/aggs/grouped/locale/us/market/stocks/"
+ENDPOINT = "v2/aggs/grouped/locale/us/market/stocks/"
 
 
 def get_date(date_str: str) -> date:
@@ -17,25 +18,27 @@ def get_date(date_str: str) -> date:
     return parsed_date
 
 
-
 def get_data_json(trade_date: date) -> dict:
     """Fetch the US stock market daily summary for a given trading date."""
     settings = get_settings()
     try:
-        response = requests.get(BASE_URL+ENDPOINT+f"{trade_date}",
-                                headers={"Authorization": f"Bearer {settings.api_key}"})
+        response = requests.get(
+            BASE_URL + ENDPOINT + f"{trade_date}",
+            headers={"Authorization": f"Bearer {settings.api_key}"},
+        )
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
         raise SystemExit(f"Request failed: {e}")
 
-def save_to_json(data ,prefix: str, file_path: str, trade_date: date):
+
+def save_to_json(data, prefix: str, file_path: str, trade_date: date):
     """Persist raw or processed pipeline data as formatted JSON."""
-    with open(f"{file_path}/{prefix}_{trade_date}.json","w") as f:
-        json.dump(data,f,indent=4)
+    with open(f"{file_path}/{prefix}_{trade_date}.json", "w") as f:
+        json.dump(data, f, indent=4)
 
 
-def filter_stock_data(response_data: dict,tickers: set) -> list:
+def filter_stock_data(response_data: dict, tickers: set) -> list:
     """Filter selected tickers and map Massive fields to internal schema."""
     records = []
     for stock in response_data["results"]:
@@ -47,9 +50,10 @@ def filter_stock_data(response_data: dict,tickers: set) -> list:
                 "low_price": stock["l"],
                 "close_price": stock["c"],
                 "volume": stock["v"],
-                "trade_day": (datetime.fromtimestamp(stock["t"]/1000).date()).isoformat() #Massive returns timestamps in milliseconds
-                }
+                "trade_day": (
+                    datetime.fromtimestamp(stock["t"] / 1000).date()
+                ).isoformat(),  # Massive returns timestamps in milliseconds
+            }
 
             records.append(record)
     return records
-
